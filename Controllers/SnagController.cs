@@ -11,25 +11,6 @@ namespace SnaggleAPI.Controllers
     public class SnagController : ControllerBase
     {
 
-        private static List<Snag> Snags = new List<Snag>
-            {
-                new Snag
-                {
-                    Project = "Snaggle",
-                    Id = 1,
-                    Title = "Should I make project or snag first?",
-                    Username = "Firestar4",
-                    Description = "I don't know what to do first"
-                },
-                new Snag
-                {
-                    Project = "Snaggle",
-                    Id = 2,
-                    Title = "Am i doing this right",
-                    Username = "Firestar4",
-                    Description = "Testing out post and put"
-                }
-            };
         private readonly DataContext context;
 
         public SnagController(DataContext context)
@@ -37,13 +18,15 @@ namespace SnaggleAPI.Controllers
             this.context = context;
         }
 
+        // Get Methods
+
         [HttpGet]
         public async Task<ActionResult<List<Snag>>> Get()
         {
             return Ok(await this.context.Snags.ToListAsync());
         }
 
-        [HttpGet("{Id}")]
+        [HttpGet("{Id}/Id")]
         public async Task<ActionResult<Snag>> Get(int Id)
         {
             var snag = await this.context.Snags.FindAsync(Id);
@@ -53,6 +36,20 @@ namespace SnaggleAPI.Controllers
             return Ok(snag);
         }
 
+     
+        [HttpGet("{CurrentStatus}/CS")]
+        public async Task<ActionResult<Snag>> Get(Status CurrentStatus)
+        {
+            var snags = await this.context.Snags.Where(snag => snag.CurrentStatus == CurrentStatus).ToListAsync();
+
+            if (!snags.Any())
+                return NotFound();
+
+            return Ok(snags);
+        }
+
+        // Post Methods
+
         [HttpPost]
         public async Task<ActionResult<List<Snag>>> AddSnag(Snag NewSnag)
         {
@@ -60,6 +57,8 @@ namespace SnaggleAPI.Controllers
             await this.context.SaveChangesAsync();
             return Ok(await this.context.Snags.ToListAsync());
         }
+
+        // Put Methods
 
         [HttpPut]
         public async Task<ActionResult<List<Snag>>> UpdateSnag(Snag request)
@@ -76,6 +75,8 @@ namespace SnaggleAPI.Controllers
 
             return Ok(await this.context.Snags.ToListAsync());
         }
+
+        // Delete Methods
 
         [HttpDelete]
         public async Task<ActionResult<List<Snag>>> DeleteSnag(int Id)
