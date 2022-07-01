@@ -12,7 +12,7 @@
 
         public DateTime Updated { get; set; } = DateTime.Now;
 
-        public List<int> SnagIds { get; set; } = new List<int>();
+        public List<int> SnagList { get; set; } = new List<int>();
         
     }
 }
