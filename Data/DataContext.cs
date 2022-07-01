@@ -9,5 +9,7 @@ namespace SnaggleAPI.Data
         { }
 
         public DbSet<Snag> Snags { get; set; }
+
+        public DbSet<Project> Projects { get; set; }
     }
 }
