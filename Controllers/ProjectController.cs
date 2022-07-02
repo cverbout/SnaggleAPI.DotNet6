@@ -32,26 +32,38 @@ namespace SnaggleAPI.Controllers
             }
         };
         */
-        
-        
+
+
         [HttpGet]
-        public async Task<ActionResult<List<Project>>> Get()
+        public async Task<ActionResult<Project>> Get()
         {
-            return Ok(await this.context.Projects.ToListAsync());
+            return Ok(await context.Projects.Include("Snags").ToListAsync());
         }
 
         [HttpGet("{Id}")]
         public async Task<ActionResult<Project>> Get(int Id)
         {
-            var dbProject = await this.context.Projects.FindAsync(Id);
+            var dbProject = await this.context.Projects
+                .Where(p => p.Id == Id)
+                .Include(p => p.Snags)
+                .ToListAsync();
+
             if (dbProject == null)
                 return BadRequest("nope");
             return Ok(dbProject);
         }
 
+
+
         [HttpPost]
-        public async Task<ActionResult<List<Project>>> AddProject(Project NewProj)
+        public async Task<ActionResult<List<Project>>> AddProject(CreateProjectDto request)
         {
+            var NewProj = new Project
+            {
+                Name = request.Name,
+                Description = request.Description
+            };
+
             this.context.Projects.Add(NewProj);
             await this.context.SaveChangesAsync();
             return Ok(await this.context.Projects.ToListAsync());
@@ -68,8 +80,24 @@ namespace SnaggleAPI.Controllers
             dbProject.Description = request.Description;
 
             await this.context.SaveChangesAsync();
-            return Ok(await this.context.Projects.ToListAsync());            
+            return Ok(await this.context.Projects.ToListAsync());
+
         }
-     
+        // Delete Methods
+
+        [HttpDelete]
+        public async Task<ActionResult<Project>> Delete(int Id)
+        {
+            var DbSnag = await context.Projects.FindAsync(Id);
+            if (DbSnag == null)
+                return NotFound("Nope");
+
+            context.Projects.Remove(DbSnag);
+            await context.SaveChangesAsync();
+
+            return await Get();
+
+        }
     }
+
 }

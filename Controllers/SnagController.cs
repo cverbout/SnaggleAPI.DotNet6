@@ -23,27 +23,42 @@ namespace SnaggleAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Snag>>> Get()
         {
-            return Ok(await this.context.Snags.ToListAsync());
+            return Ok(await context.Snags.ToListAsync());
         }
 
         [HttpGet("{Id}/Id")]
         public async Task<ActionResult<Snag>> Get(int Id)
         {
-            var snag = await this.context.Snags.FindAsync(Id);
+            var snag = await context.Snags.FindAsync(Id);
             if (snag == null)
                 return BadRequest("Not found");
 
             return Ok(snag);
         }
 
-     
-        [HttpGet("{CurrentStatus}/CS")]
-        public async Task<ActionResult<Snag>> Get(Status CurrentStatus)
+        [HttpGet("{ProjectId}/ProjectId")]
+        public async Task<ActionResult<Snag>> GetProjectSnags(int ProjectId)
         {
-            var snags = await this.context.Snags.Where(snag => snag.CurrentStatus == CurrentStatus).ToListAsync();
+            var snags = await context.Snags
+                .Where(s => s.ProjectId == ProjectId)
+                .ToListAsync();
 
             if (!snags.Any())
-                return NotFound();
+                return NotFound("Nope");
+
+            return Ok(snags);
+        }
+
+        [HttpGet("{CurrentStatus}/CS")]
+        public async Task<ActionResult<Snag>> GetProjectStatusSnags(int ProjectId, Status CurrentStatus)
+        {
+            var snags = await context.Snags
+                .Where(s => s.ProjectId == ProjectId)
+                .Where(s => s.CurrentStatus == CurrentStatus)
+                .ToListAsync();
+
+            if (!snags.Any())
+                return NotFound("Nope");
 
             return Ok(snags);
         }
@@ -53,7 +68,7 @@ namespace SnaggleAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Snag>> CreateSnag(CreateSnagDto request)
         {
-            var Proj = await this.context.Projects.FindAsync(request.ProjectId);
+            var Proj = await context.Projects.FindAsync(request.ProjectId);
             if (Proj == null)
                 return NotFound();
 
@@ -65,8 +80,8 @@ namespace SnaggleAPI.Controllers
                 Project = Proj
 
             };
-            this.context.Snags.Add(NewSnag);
-            await this.context.SaveChangesAsync();
+            context.Snags.Add(NewSnag);
+            await context.SaveChangesAsync();
 
             return await Get(NewSnag.Id);
         }
@@ -74,34 +89,37 @@ namespace SnaggleAPI.Controllers
         // Put Methods
 
         [HttpPut]
-        public async Task<ActionResult<List<Snag>>> UpdateSnag(Snag request)
+        public async Task<ActionResult<List<Snag>>> UpdateSnag(UpdateSnagDto request)
         {
-            var DbSnag = await this.context.Snags.FindAsync(request.Id);
+            var DbSnag = await context.Snags.FindAsync(request.Id);
             if (DbSnag == null)
                 return BadRequest("Not found");
             DbSnag.Title = request.Title;
             DbSnag.Description = request.Description;
             DbSnag.CurrentStatus = request.CurrentStatus;
             DbSnag.UpdatedDate = DateTime.Now;
+            
 
-            await this.context.SaveChangesAsync();
+            await context.SaveChangesAsync();
 
-            return Ok(await this.context.Snags.ToListAsync());
+            return Ok(await context.Snags.ToListAsync());
         }
 
         // Delete Methods
 
         [HttpDelete]
-        public async Task<ActionResult<List<Snag>>> DeleteSnag(int Id)
+        public async Task<ActionResult<Snag>> DeleteSnag(int Id)
         {
-            var DbSnag = await this.context.Snags.FindAsync(Id);
+            var DbSnag = await context.Snags.FindAsync(Id);
             if (DbSnag == null)
                 return BadRequest("Not found sorry");
 
-            this.context.Snags.Remove(DbSnag);
-            await this.context.SaveChangesAsync();
+            var ProjId = DbSnag.ProjectId;
 
-            return Ok(await this.context.Snags.ToListAsync());
+            context.Snags.Remove(DbSnag);
+            await context.SaveChangesAsync();
+
+            return await GetProjectSnags(ProjId);
         }
 
 
