@@ -51,11 +51,24 @@ namespace SnaggleAPI.Controllers
         // Post Methods
 
         [HttpPost]
-        public async Task<ActionResult<List<Snag>>> AddSnag(Snag NewSnag)
+        public async Task<ActionResult<Snag>> CreateSnag(CreateSnagDto request)
         {
+            var Proj = await this.context.Projects.FindAsync(request.ProjectId);
+            if (Proj == null)
+                return NotFound();
+
+            var NewSnag = new Snag
+            {
+                Title = request.Title,
+                Username = request.Username,
+                Description = request.Description,
+                Project = Proj
+
+            };
             this.context.Snags.Add(NewSnag);
             await this.context.SaveChangesAsync();
-            return Ok(await this.context.Snags.ToListAsync());
+
+            return await Get(NewSnag.Id);
         }
 
         // Put Methods

@@ -12,6 +12,8 @@
         public DateTime Created { get; set; } = DateTime.Now;
 
         public DateTime Updated { get; set; } = DateTime.Now;
+
+        public ICollection<Snag>? Snags { get; set; }
         
     }
 }
