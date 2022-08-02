@@ -13,26 +13,6 @@ namespace SnaggleAPI.Controllers
         {
             this.context = context;
         }
-        /*
-        private static List<Project> projs = new List<Project>
-        {
-            new Project
-            {
-                Id = 1,
-                Name ="Snaggle",
-                Description = "First real portfolio project",
-                Creator = "Flamestar4"
-            },
-            new Project
-            {
-                Id = 2,
-                Name ="InsectInspector",
-                Description = "First real portfolio project alternate name",
-                Creator = "Flamestar4"
-            }
-        };
-        */
-
 
         [HttpGet]
         public async Task<ActionResult<Project>> Get()
@@ -53,8 +33,6 @@ namespace SnaggleAPI.Controllers
             return Ok(dbProject);
         }
 
-
-
         [HttpPost]
         public async Task<ActionResult<List<Project>>> AddProject(CreateProjectDto request)
         {
@@ -70,7 +48,7 @@ namespace SnaggleAPI.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult<List<Project>>> UpdateProject(Project request)
+        public async Task<ActionResult<List<Project>>> UpdateProject(UpdateProjectDto request)
         {
             var dbProject = this.context.Projects.Find(request.Id);
             if (dbProject == null)
@@ -78,11 +56,13 @@ namespace SnaggleAPI.Controllers
 
             dbProject.Name = request.Name;
             dbProject.Description = request.Description;
+            dbProject.Updated = DateTime.Now;
 
             await this.context.SaveChangesAsync();
             return Ok(await this.context.Projects.ToListAsync());
 
         }
+        
         // Delete Methods
 
         [HttpDelete]
