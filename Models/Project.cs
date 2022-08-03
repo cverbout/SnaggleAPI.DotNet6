@@ -1,4 +1,6 @@
-﻿namespace SnaggleAPI.Models
+﻿using System.Text.Json.Serialization;
+
+namespace SnaggleAPI.Models
 {
     public class Project
     {
@@ -15,6 +17,7 @@
 
         public ICollection<Snag>? Snags { get; set; }
 
+        [JsonIgnore]
         public User? User { get; set; }
 
     }
