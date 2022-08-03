@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using SnaggleAPI.Models;
 
 namespace SnaggleAPI.Controllers
 {

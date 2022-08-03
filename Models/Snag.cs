@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace SnaggleAPI
+namespace SnaggleAPI.Models
 {
     public enum Status
     {

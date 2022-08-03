@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SnaggleAPI.Models;
 
 namespace SnaggleAPI.Data
 {
@@ -7,19 +8,12 @@ namespace SnaggleAPI.Data
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         { }
 
-        public DbSet<Snag> Snags { get; set; }
+        public DbSet<Snag> Snags => Set<Snag>();
 
-        public DbSet<Project> Projects { get; set; }
+        public DbSet<Project> Projects => Set<Project>();
 
-        /*
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Project>()
-                .HasMany<Snag>(p => p.Snags)
-                .WithRequired(s => s.Project)
-                .WillCascadeOnDelete();
-        }
-        */
+        public DbSet<User> Users => Set<User>();
+       
     }
 
 

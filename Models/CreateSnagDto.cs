@@ -1,4 +1,4 @@
-﻿namespace SnaggleAPI
+﻿namespace SnaggleAPI.Models
 {
     public class CreateSnagDto
     {
