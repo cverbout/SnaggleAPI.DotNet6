@@ -37,10 +37,18 @@ namespace SnaggleAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<List<Project>>> AddProject(CreateProjectDto request)
         {
+            var user = await context.Users.FindAsync(request.UserId);
+            if (user == null)
+            {
+                return BadRequest("User DNE");
+            }
+
             var NewProj = new Project
             {
                 Name = request.Name,
-                Description = request.Description
+                Description = request.Description,
+                Creator = user.Username,
+                User = user
             };
 
             this.context.Projects.Add(NewProj);
@@ -51,7 +59,7 @@ namespace SnaggleAPI.Controllers
         [HttpPut]
         public async Task<ActionResult<List<Project>>> UpdateProject(UpdateProjectDto request)
         {
-            var dbProject = this.context.Projects.Find(request.Id);
+            var dbProject = context.Projects.Find(request.Id);
             if (dbProject == null)
                 return BadRequest("Nope");
 

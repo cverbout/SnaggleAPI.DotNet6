@@ -18,7 +18,7 @@ namespace SnaggleAPI.Controllers
         [HttpGet("ViewUsers")]
         public async Task<ActionResult<User>> Get()
         {
-            return Ok(await _context.Users.ToListAsync());
+            return Ok(await _context.Users.Include("Projects").ToListAsync());
         }
 
         [HttpPost("register")]
